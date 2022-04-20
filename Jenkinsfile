@@ -20,13 +20,32 @@ pipeline {
             }
         }
         stage('test report'){
+            when {
+                expression {choice == 'one'}
+            }
+            
             steps{
+                
                 junit 'target/surefire-reports/*.xml'
             }
         }
         stage('archive'){
+            when {
+                expression {choice == 'two'}
+            }
+            
             steps{
+               
                 archiveArtifacts artifacts: 'target/*.jar'
+            }
+        }
+        stage('execute ansible'){
+            when {
+                expression {choice == 'three'}
+            }
+            steps{
+                
+              ansiblePlaybook credentialsId: 'ansiblekey', disableHostKeyChecking: true, inventory: 'dev.inv', playbook: 'tomcat.yml'  
             }
         }
     }
